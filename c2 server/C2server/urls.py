@@ -19,5 +19,5 @@ from django.urls import path,include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    # path('login/',LoginView.as_view(),name="login_url"),
+    path('', include('frontend.urls')),
 ]
