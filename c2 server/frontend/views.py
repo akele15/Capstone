@@ -2,10 +2,13 @@ from django.shortcuts import render, redirect
 from api.models import InviteCode
 from api.serializers import InviteCodeSerializer
 from rest_framework import generics, permissions 
+from django.http import HttpResponse
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from django.views import View
 from django.contrib.admin.views.decorators import staff_member_required
 import random
+from .forms import UserForm
+from django.contrib.auth import authenticate, login, logout
 # Create your views here.
 class InviteCodeView(View):
     permission_classes = (permissions.IsAdminUser,)
@@ -34,5 +37,22 @@ class InviteCodeView(View):
             Invite.save()
             return render(request,'frontend/invitecode.html',{"invite_code":stuff})
 
-def login(request):
-    return render(request,"frontend/login2.html")
+def user_login(request):
+    if request.method =="POST":
+        user_name = request.POST["username"]
+        password = request.POST["password"]
+        user= authenticate(
+        request,
+        username=user_name,
+        password=password
+    )
+        if user is None:
+            return HttpResponse("Invalid credentials.")
+        login(request,user)
+        return HttpResponse("valid credentials.")
+    else:
+        form=UserForm()
+        return render(request, "frontend/login2.html", {'form':form})
+
+
+    #return render(request,"frontend/login2.html")
