@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from django.views import View
 from django.contrib.admin.views.decorators import staff_member_required
 import random
-from .forms import UserForm
+from .forms import *
 from django.contrib.auth import authenticate, login, logout
 # Create your views here.
 class InviteCodeView(View):
@@ -47,12 +47,36 @@ def user_login(request):
         password=password
     )
         if user is None:
-            return HttpResponse("Invalid credentials.")
+            return redirect('/login')
         login(request,user)
         return HttpResponse("valid credentials.")
     else:
         form=UserForm()
         return render(request, "frontend/login2.html", {'form':form})
 
-
+def user_register(request):
+    if not InviteCode.objects.exists():
+        return HttpResponse("Please wait for the admin to finish setting up")
+    if request.method=="POST":
+        #user_name= request.POST["username"]
+        #pass1 = request.POST["password"]
+        #pass2 = request.POST["confirm_password"]
+        #invite_code= request.POST["invite_code"]
+        form = RegisterForm(request.POST)
+        CurrentCode=InviteCode.objects.last().Code
+        print(CurrentCode)
+        if form.is_valid():
+            if form.cleaned_data['password']==form.cleaned_data['confirm_password'] and CurrentCode==form.cleaned_data['invite_code']:
+                new_user = User.objects.create_user(form.cleaned_data['username'] ,'',form.cleaned_data['password'])
+                print("saving")
+                new_user.save()
+                return HttpResponse("registered")
+            else:
+                return redirect("/register")
+        else:
+            return redirect("/register")
+        #render(request,"frontend/register.html",{'form':form})
+    else:
+        form=RegisterForm()
+        return render(request,"frontend/register.html",{'form':form})
     #return render(request,"frontend/login2.html")
