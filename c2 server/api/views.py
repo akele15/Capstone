@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, renderer_classes
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -35,7 +36,18 @@ class checkin(APIView):
             return Response(serializer.data,status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_204_NO_CONTENT)
-
+@csrf_exempt
+@renderer_classes(JSONRenderer,)
+@api_view(('Post',))
+def AgentReportOutput(request):
+    if request.method=="POST":
+        an_id=request.POST.get("id")
+        log=get_object_or_404(UserActionLog, pk=an_id)
+        log.Output=request.POST.get("output")
+        log.save()
+        return Response(status=status.HTTP_201_CREATED)
+    else:
+        return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED) 
 
 # class checkin(viewsets.ReadOnlyModelViewSet,agent_id):
 #     """

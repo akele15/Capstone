@@ -66,7 +66,33 @@ def test_checkin_command(client,test_agent,test_user):
     response= client.get("/api/checkin/"+str(id), follow=True)
     assert response.status_code == 200
     assert 'ls -al' in str(response.content)
-
+# AgentReportOutput testst
+@pytest.mark.django_db  
+def test_output_get(client):
+    response =client.get("/api/agentreportoutput/")
+    assert response.status_code==405
+@pytest.mark.django_db  
+def test_output_no_log(client):
+    output="this is output"
+    data={"output":output,"id": 3, }
+    response =client.post("/api/agentreportoutput/", data=data)
+    assert response.status_code==404
+@pytest.mark.django_db  
+def test_output_correct(client,test_agent,test_user):
+    log= UserActionLog(
+        User= User.objects.first(),
+        Command = "ls -al",
+        CommandType ='ShellCommand',
+        Agent= Agent.objects.first(),
+        Queued = True,
+    )
+    log.save()
+    output="this is output"
+    data={"output":output,"id": UserActionLog.objects.first().id, }
+    response =client.post("/api/agentreportoutput/", data=data)
+    assert UserActionLog.objects.first().id ==1
+    assert response.status_code==201
+    assert UserActionLog.objects.first().Output == output
 
 # @pytest.mark.django_db  
 # def test_checkin_agent_No_command(c):

@@ -99,7 +99,8 @@ def agent(request,agent_id):
             #File transfer
             else:
                 command_log= UserActionLog()
-        return HttpResponse("we posting boys")
+                # invalid form
+        return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
     else:
         form=ShellCommandForm()
         return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})

