@@ -36,14 +36,14 @@ class FileTransferLog(models.Model):
 
 class UserActionLog(models.Model):
     User= models.ForeignKey(User, on_delete=models.PROTECT)
-    Command = models.CharField(max_length=255)
+    Command = models.TextField()
     Output = models.TextField()
     CommandTypeEnumChoice=(
         ('FileTransfer','FileTransfer'),
         ('ShellCommand','ShellCommand')
     )
     CommandType = models.CharField(choices=CommandTypeEnumChoice,max_length=255)
-    TransferLog= models.ForeignKey(FileTransferLog, on_delete=models.PROTECT)
+    TransferLog= models.ForeignKey(FileTransferLog, on_delete=models.PROTECT,null=True,blank=True)
     Agent= models.ForeignKey(Agent,on_delete=models.PROTECT )
     Queued = models.BooleanField()
 
