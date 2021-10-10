@@ -105,3 +105,8 @@ def agent(request,agent_id):
         form=ShellCommandForm()
         return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
         return HttpResponse("agent"+" "+ str(agent_id))
+def agentselect(request):
+    agent_list=Agent.objects.all()
+    context = {'agent_list': list(agent_list)}
+    #return HttpResponse("hi")
+    return render(request, 'frontend/agentselect.html', context)

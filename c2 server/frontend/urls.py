@@ -8,6 +8,7 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('register/', views.user_register, name='register'),
     path('agent/<int:agent_id>/', views.agent, name='agent'),
+    path('agentselect/', views.agentselect, name='agentselect'),
     path('logout/', LogoutView.as_view(), {'next_page': 'login'}, name='logout'),
     # path('',views.indexView,name="home"),
     # # path('dashboard/',views.dashboardView,name="dashboard"),
