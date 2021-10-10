@@ -14,3 +14,7 @@ class RegisterForm(forms.Form):
 	username=forms.CharField(max_length=30)
 	password = forms.CharField(widget=forms.PasswordInput)
 	confirm_password= forms.CharField(widget=forms.PasswordInput)
+
+class ShellCommandForm(forms.Form):
+	action_type =forms.CharField(widget=forms.Select(choices=UserActionLog.CommandTypeEnumChoice))
+	command =  forms.CharField(widget=forms.Textarea)

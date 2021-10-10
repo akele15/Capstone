@@ -9,6 +9,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 import random
 from .forms import *
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required 
 # Create your views here.
 class InviteCodeView(View):
     permission_classes = (permissions.IsAdminUser,)
@@ -80,3 +81,32 @@ def user_register(request):
         form=RegisterForm()
         return render(request,"frontend/register.html",{'form':form})
     #return render(request,"frontend/login2.html")
+#@login_required
+def agent(request,agent_id):
+    if request.method=="POST":
+        form= ShellCommandForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['action_type']=="ShellCommand":
+                command_log= UserActionLog()
+                command_log.User=request.user
+                command_log.Command= form.cleaned_data['command']
+                command_log.Agent=Agent.objects.get(pk=agent_id)
+                command_log.Queued= True
+                command_log.CommandType=form.cleaned_data['action_type']
+                #command_log.TransferLog= ""
+                command_log.save()
+                return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
+            #File transfer
+            else:
+                command_log= UserActionLog()
+                # invalid form
+        return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
+    else:
+        form=ShellCommandForm()
+        return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
+        return HttpResponse("agent"+" "+ str(agent_id))
+def agentselect(request):
+    agent_list=Agent.objects.all()
+    context = {'agent_list': list(agent_list)}
+    #return HttpResponse("hi")
+    return render(request, 'frontend/agentselect.html', context)

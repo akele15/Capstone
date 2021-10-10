@@ -1,0 +1,27 @@
+
+{% block content %}
+
+  {% if form.errors %}
+    <p>Please try again.</p>
+  {% endif %}
+
+
+<h1>Agent:{{id}}</h1>
+  <form method="post" action="">
+    {% csrf_token %}
+    <table>
+          <tr>
+        <td>{{ form.action_type.label_tag }}</td>
+        <td>{{ form.action_type }}</td>
+      </tr>
+          <tr>
+        <td>{{ form.command.label_tag }}</td>
+        <td>{{ form.command }}</td>
+      </tr>
+
+      </table>
+    <input type="submit" value="queue" />
+    <input type="hidden" name="next" value="{{ next }}" />
+  </form>
+ 
+{% endblock %}

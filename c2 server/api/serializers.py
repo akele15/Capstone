@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Agent, InviteCode
+from .models import *
 from django.utils import timezone
 
 class AgentSerializer(serializers.ModelSerializer):
@@ -11,6 +11,16 @@ class InviteCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model= InviteCode
         fields= '__all__'
+class UserActionLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= UserActionLog
+        fields='__all__'
+
+
+
+
+
+
 # class WorkspaceSerializer(serializers.ModelSerializer):
 
 #     def create(self, validated_data):
