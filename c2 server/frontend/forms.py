@@ -18,3 +18,10 @@ class RegisterForm(forms.Form):
 class ShellCommandForm(forms.Form):
 	action_type =forms.CharField(widget=forms.Select(choices=UserActionLog.CommandTypeEnumChoice))
 	command =  forms.CharField(widget=forms.Textarea)
+	prefix= 'command'
+class FileTransferForm(forms.Form):
+	direction = forms.CharField(widget=forms.Select(choices=FileTransferLog.DirectionTypeEnumChoice))
+	file_to_upload = forms.FileField(required=False)
+	path_to_file = forms.CharField(required=False)
+	filename= forms.CharField(required=False)
+	prefix= 'files'

@@ -10,6 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from django.http import HttpResponse
 from django.http import JsonResponse
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import FileUploadParser
 # Create your views here.
 class RegisterAgent(APIView):
     serializer_class= AgentSerializer()
@@ -48,6 +50,21 @@ def AgentReportOutput(request):
         return Response(status=status.HTTP_201_CREATED)
     else:
         return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED) 
+
+
+class MyUploadView(APIView):
+    parser_class = (FileUploadParser,)
+
+    def put(self, request, format=None):
+        if 'file' not in request.data:
+            raise ParseError("Empty content")
+        id= request['id']
+        f = request.data['file']
+        log=UserActionLog.objects.filter(id=id).first().FileTransferLog
+
+        log.File=f
+        log.save()
+        return Response(status=status.HTTP_201_CREATED)
 
 # class checkin(viewsets.ReadOnlyModelViewSet,agent_id):
 #     """

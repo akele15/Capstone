@@ -20,13 +20,15 @@ class InviteCode(models.Model):
 class FileTransferLog(models.Model):
     User= models.ForeignKey(User, on_delete=models.PROTECT)
     FileName = models.CharField(max_length=255)
-    Time= models.DateTimeField()
+    Time= models.DateTimeField(default=timezone.now)
     Hash =models.CharField(max_length=64)
+    File=models.FileField(null=True)
     DirectionTypeEnumChoice=(
         ('Upload', 'Upload'),
         ('Download', 'Download')
     )
     direction= models.CharField(choices=DirectionTypeEnumChoice,max_length=255)
+    Path= models.TextField(null=True)
 
 
 
@@ -45,7 +47,7 @@ class UserActionLog(models.Model):
     CommandType = models.CharField(choices=CommandTypeEnumChoice,max_length=255)
     TransferLog= models.ForeignKey(FileTransferLog, on_delete=models.PROTECT,null=True,blank=True)
     Agent= models.ForeignKey(Agent,on_delete=models.PROTECT )
-    Queued = models.BooleanField()
+    Queued = models.BooleanField(default=True)
 
 
 

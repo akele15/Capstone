@@ -10,6 +10,8 @@ import random
 from .forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required 
+from django.shortcuts import get_object_or_404
+#from filehash import FileHash
 # Create your views here.
 class InviteCodeView(View):
     permission_classes = (permissions.IsAdminUser,)
@@ -83,30 +85,107 @@ def user_register(request):
     #return render(request,"frontend/login2.html")
 #@login_required
 def agent(request,agent_id):
+    the_id= get_object_or_404(Agent, pk=agent_id)
     if request.method=="POST":
-        form= ShellCommandForm(request.POST)
-        if form.is_valid():
-            if form.cleaned_data['action_type']=="ShellCommand":
-                command_log= UserActionLog()
+        post_data = request.POST or None
+        shell_form= ShellCommandForm(request.POST,prefix= 'command')
+        file_form= FileTransferForm(request.POST,request.FILES,prefix= 'files')
+        # if file_form.is_valid():
+        #     return HttpResponse("trigger")
+        # else:
+        #     return HttpResponse("miss")
+        if shell_form.is_valid():
+            #return HttpResponse("shell form is valid")
+            #if shell_form.cleaned_data['action_type']=="ShellCommand":
+            command_log= UserActionLog()
+            command_log.User=request.user
+            command_log.Command= shell_form.cleaned_data['command']
+            command_log.Agent=Agent.objects.get(pk=agent_id)
+            command_log.Queued= True
+            command_log.CommandType='ShellCommand'
+            #command_log.TransferLog= ""
+            command_log.save()
+            form=ShellCommandForm()
+            file_form= FileTransferForm()
+            return render(request,"frontend/agent.html",{'form':form, 'id':agent_id,'file_form':file_form})
+            #Shell form not valid 
+            # else:
+            #     form=ShellCommandForm()
+            #     file_form= FileTransferForm()
+            #     return render(request,"frontend/agent.html",{'form':form, 'id':agent_id,'file_form':file_form})
+                # invalid form
+        #return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
+        if file_form.is_valid():
+            if file_form.cleaned_data['direction']=='Download':
+                command_log=UserActionLog()
                 command_log.User=request.user
-                command_log.Command= form.cleaned_data['command']
                 command_log.Agent=Agent.objects.get(pk=agent_id)
                 command_log.Queued= True
-                command_log.CommandType=form.cleaned_data['action_type']
-                #command_log.TransferLog= ""
+                command_log.CommandType='FileTransfer'
+                file_log=FileTransferLog()
+                file_log.User=request.user
+                file_log.File=request.FILES['files-file_to_upload'] 
+                file_log.FileName=file_log.File.name
+                file_log.direction='Download'
+                #TODO write hash function
+                #file_log.Hash= 
+                #sha1hasher = FileHash('sha1')
+                #sha1hasher.hash_file(file_log.File)
+                file_log.save()
+                command_log.TransferLog=file_log
                 command_log.save()
-                return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
-            #File transfer
-            else:
-                command_log= UserActionLog()
-                # invalid form
-        return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
-    else:
+                # display form again
+                # form=ShellCommandForm()
+                # file_form= FileTransferForm()
+                # return render(request,"frontend/agent.html",{'form':form, 'id':agent_id,'file_form':file_form})
+                # return HttpResponse("file form valid d saved")
+            if file_form.cleaned_data['direction']=='Upload':
+                command_log=UserActionLog()
+                command_log.User=request.user
+                command_log.Agent=Agent.objects.get(pk=agent_id)
+                command_log.Queued= True
+                command_log.CommandType='FileTransfer'
+
+                file_log=FileTransferLog()
+                file_log.User=request.user
+                # file_log.File=request.FILES['files-file_to_upload'] 
+                file_log.FileName=file_form.cleaned_data['filename']
+                file_log.direction='Upload'
+                file_log.Path= file_form.cleaned_data['path_to_file']
+                file_log.save()
+                command_log.TransferLog=file_log
+                command_log.save()
+                # form=ShellCommandForm()
+                # file_form= FileTransferForm()
+                # return render(request,"frontend/agent.html",{'form':form, 'id':agent_id,'file_form':file_form})
+                #return HttpResponse("file form valid u")
         form=ShellCommandForm()
-        return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
+        file_form= FileTransferForm()
+        return render(request,"frontend/agent.html",{'form':form, 'id':agent_id,'file_form':file_form}) 
+       # if file_form.path_to_file != "":
+       #     return HttpResponse("path exists")
+      #  if file_form.file_to_upload:
+         #   return HttpResponse("file form not valid")
+    # get request
+    else:
+        # context = (shell_form= ShellCommandForm,                                      file_form= FileTransferForm)
+        form=ShellCommandForm()
+        file_form= FileTransferForm()
+        return render(request,"frontend/agent.html",{'form':form, 'id':agent_id,'file_form':file_form})
         return HttpResponse("agent"+" "+ str(agent_id))
 def agentselect(request):
     agent_list=Agent.objects.all()
     context = {'agent_list': list(agent_list)}
     #return HttpResponse("hi")
     return render(request, 'frontend/agentselect.html', context)
+
+# def test(request):
+#     if request.method=="POST":
+#         file_form= FileTransferForm(request.POST,request.FILES)
+#         if file_form.is_valid():
+#             return HttpResponse("valid")
+#         else:
+#             return HttpResponse("not valid")
+#     else:
+#         file_form= FileTransferForm()
+#         return render(request, 'frontend/test.html',{'form':file_form})

@@ -13,7 +13,11 @@ def create_invite():
     aCode=InviteCode()
     aCode.Code="1234"
     return aCode.save()
-
+@pytest.fixture
+def test_agent():
+    agent=Agent()
+    agent.name="test user"
+    agent.save()
 # invite tests
 
 #@pytest.mark.django_db
@@ -129,7 +133,41 @@ def test_register_correct(create_invite,client):
     response= client.post("/register/", form_data,follow=True)
     assert response.status_code ==200
     assert response.content ==b'registered'
-    
+# upload tests
+@pytest.mark.django_db
+def test_agent_file_form_invalid(test_user,client,test_agent):
+    form_data={
+        "direction": 'bad_data',
+        "file_to_upload": 'bad_data',
+        "path_to_file":'bad_data',
+        "filename": 'bad-data'
+    }
+    agent_id= Agent.objects.all().first().id
+    client.force_login(User.objects.all().first())
+    response= client.post("/agent/"+str(agent_id)+"/",form_data,follow=True)
+    assert response.status_code ==200
+    assert b"Agent:" in response.content
+
+@pytest.mark.skip(reason="think I need to figure out how to implement prefix in test ")
+@pytest.mark.django_db
+def test_agent_file_form_download_upload(test_user,client,test_agent):
+    form_data={
+        "direction": 'Download',
+        "path_to_file":'/home/user/',
+        "filename": 'dummy.txt'
+    }
+    agent_id= Agent.objects.all().first().id
+    client.force_login(User.objects.all().first())
+    response= client.post("/agent/"+str(agent_id)+"/",form_data,follow=True)
+    file_log=FileTransferLog.objects.all().first()
+    cmd_log= UserActionLog.objects.all().first()
+    assert response.status_code ==200
+    assert cmd_log.TransferLog.id == cmd_log.id   
+    assert file_log.direction == 'Download'
+    assert file_log.Path == '/home/user/'
+    assert file_log.FileName == 'dummy.txt'
+
+# download tests
 
 
 

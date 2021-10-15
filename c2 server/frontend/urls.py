@@ -10,6 +10,7 @@ urlpatterns = [
     path('agent/<int:agent_id>/', views.agent, name='agent'),
     path('agentselect/', views.agentselect, name='agentselect'),
     path('logout/', LogoutView.as_view(), {'next_page': 'login'}, name='logout'),
+    #path('test/',views.test, name='test'),
     # path('',views.indexView,name="home"),
     # # path('dashboard/',views.dashboardView,name="dashboard"),
     # path('login/',LoginView.as_view(),name="login_url"),
