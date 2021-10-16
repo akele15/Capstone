@@ -87,6 +87,7 @@ def user_register(request):
 def agent(request,agent_id):
     the_id= get_object_or_404(Agent, pk=agent_id)
     if request.method=="POST":
+        #return HttpResponse("post")
         post_data = request.POST or None
         shell_form= ShellCommandForm(request.POST,prefix= 'command')
         file_form= FileTransferForm(request.POST,request.FILES,prefix= 'files')
@@ -95,6 +96,7 @@ def agent(request,agent_id):
         # else:
         #     return HttpResponse("miss")
         if shell_form.is_valid():
+            #return HttpResponse("shell valid")
             #return HttpResponse("shell form is valid")
             #if shell_form.cleaned_data['action_type']=="ShellCommand":
             command_log= UserActionLog()
@@ -116,6 +118,7 @@ def agent(request,agent_id):
                 # invalid form
         #return render(request,"frontend/agent.html",{'form':form, 'id':agent_id})
         if file_form.is_valid():
+            #return HttpResponse("valid")
             if file_form.cleaned_data['direction']=='Download':
                 command_log=UserActionLog()
                 command_log.User=request.user
@@ -124,8 +127,10 @@ def agent(request,agent_id):
                 command_log.CommandType='FileTransfer'
                 file_log=FileTransferLog()
                 file_log.User=request.user
-                file_log.File=request.FILES['files-file_to_upload'] 
-                file_log.FileName=file_log.File.name
+                file_log.FileName=file_form.cleaned_data['filename']
+                file_log.Path=file_form.cleaned_data['path_to_file']
+                #file_log.File=request.FILES['files-file_to_upload'] 
+                #file_log.FileName=file_log.File.name
                 file_log.direction='Download'
                 #TODO write hash function
                 #file_log.Hash= 
@@ -148,10 +153,10 @@ def agent(request,agent_id):
 
                 file_log=FileTransferLog()
                 file_log.User=request.user
-                # file_log.File=request.FILES['files-file_to_upload'] 
-                file_log.FileName=file_form.cleaned_data['filename']
+                file_log.File=request.FILES['files-file_to_upload'] 
+                file_log.FileName=file_log.File.name
                 file_log.direction='Upload'
-                file_log.Path= file_form.cleaned_data['path_to_file']
+                #file_log.Path= file_form.cleaned_data['path_to_file']
                 file_log.save()
                 command_log.TransferLog=file_log
                 command_log.save()

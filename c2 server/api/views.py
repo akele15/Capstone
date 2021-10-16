@@ -50,21 +50,32 @@ def AgentReportOutput(request):
         return Response(status=status.HTTP_201_CREATED)
     else:
         return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED) 
+def AgentDownload(request,file_id):
+    if request.method=="GET":
+        log=get_object_or_404(UserActionLog, pk=file_id)
+        data=log.TransferLog.File
+        response = HttpResponse(data, headers={
+            'Content-Type': 'application/vnd.ms-excel',
+            'Content-Disposition': 'attachment; filename="%s"'%log.TransferLog.FileName, })
+        return response
+    else:
+        return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED)
+
+# class MyUploadView(APIView):
+#     parser_class = (FileUploadParser,)
+
+#     def put(self, request, format=None):
+#         if 'file' not in request.data:
+#             raise ParseError("Empty content")
+#         id= request['id']
+#         f = request.data['file']
+#         log=UserActionLog.objects.filter(id=id).first().FileTransferLog
+
+#         log.File=f
+#         log.save()
+#         return Response(status=status.HTTP_201_CREATED)
 
 
-class MyUploadView(APIView):
-    parser_class = (FileUploadParser,)
-
-    def put(self, request, format=None):
-        if 'file' not in request.data:
-            raise ParseError("Empty content")
-        id= request['id']
-        f = request.data['file']
-        log=UserActionLog.objects.filter(id=id).first().FileTransferLog
-
-        log.File=f
-        log.save()
-        return Response(status=status.HTTP_201_CREATED)
 
 # class checkin(viewsets.ReadOnlyModelViewSet,agent_id):
 #     """

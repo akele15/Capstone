@@ -148,13 +148,16 @@ def test_agent_file_form_invalid(test_user,client,test_agent):
     assert response.status_code ==200
     assert b"Agent:" in response.content
 
-@pytest.mark.skip(reason="think I need to figure out how to implement prefix in test ")
+
+
 @pytest.mark.django_db
-def test_agent_file_form_download_upload(test_user,client,test_agent):
+def test_agent_file_form_upload(test_user,client,test_agent):
     form_data={
-        "direction": 'Download',
-        "path_to_file":'/home/user/',
-        "filename": 'dummy.txt'
+        "files-direction": 'Upload',
+        "files-file_to_upload" : open("/code/test/test_upload.txt",'rb'),
+        #"files-filename": 'dummy.txt',
+        #"files-path_to_file": '/home/user/',
+        #"files-file_to_upload":""
     }
     agent_id= Agent.objects.all().first().id
     client.force_login(User.objects.all().first())
@@ -162,13 +165,41 @@ def test_agent_file_form_download_upload(test_user,client,test_agent):
     file_log=FileTransferLog.objects.all().first()
     cmd_log= UserActionLog.objects.all().first()
     assert response.status_code ==200
-    assert cmd_log.TransferLog.id == cmd_log.id   
+    #assert cmd_log.TransferLog.id == cmd_log.id   
+    assert file_log.direction == 'Upload'
+    #assert file_log.File == open("/code/test/test_upload.txt",'rb')
+    #assert file_log.Path == '/home/user/'
+    assert file_log.FileName == 'test_upload.txt'
+
+
+@pytest.mark.django_db
+def test_agent_agent_get(test_user,client,test_agent):
+    client.force_login(User.objects.all().first())
+    agent_id= Agent.objects.all().first().id
+    response= client.get("/agent/"+str(agent_id)+"/")
+    assert response.status_code==200
+
+# download tests
+#@pytest.mark.skip(reason="think I need to figure out how to implement prefix in test ")
+@pytest.mark.django_db
+def test_agent_file_form_download(test_user,client,test_agent):
+    form_data={
+        "files-direction": 'Download',
+        #"files-file_to_upload":'dummy.txt',
+        "files-filename": 'dummy.txt',
+        "files-path_to_file": '/home/user/',
+        #"files-file_to_upload":""
+    }
+    agent_id= Agent.objects.all().first().id
+    client.force_login(User.objects.all().first())
+    response= client.post("/agent/"+str(agent_id)+"/",form_data,follow=True)
+    file_log=FileTransferLog.objects.all().first()
+    cmd_log= UserActionLog.objects.all().first()
+    assert response.status_code ==200
+    #assert cmd_log.TransferLog.id == cmd_log.id   
     assert file_log.direction == 'Download'
     assert file_log.Path == '/home/user/'
     assert file_log.FileName == 'dummy.txt'
-
-# download tests
-
 
 
 

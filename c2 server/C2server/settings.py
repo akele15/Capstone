@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+MEDIA_ROOT= '/code/files'
 # Application definition
 
 INSTALLED_APPS = [
