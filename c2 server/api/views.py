@@ -30,6 +30,7 @@ class checkin(APIView):
     serializer_class= UserActionLogSerializer()
     def get(self,request,agent_id):
         agent= get_object_or_404(Agent, pk=agent_id)
+        print(agent)
         if UserActionLog.objects.filter(Agent=agent).exists():
             command=UserActionLog.objects.filter(Agent=agent, Queued=True).first()
             command.Queued=False

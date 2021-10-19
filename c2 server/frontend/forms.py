@@ -16,7 +16,7 @@ class RegisterForm(forms.Form):
 	confirm_password= forms.CharField(widget=forms.PasswordInput)
 
 class ShellCommandForm(forms.Form):
-	action_type =forms.CharField(widget=forms.Select(choices=UserActionLog.CommandTypeEnumChoice))
+	action_type =forms.CharField(widget=forms.Select(choices=UserActionLog.CommandTypeEnumChoice),required=False)
 	command =  forms.CharField(widget=forms.Textarea)
 	prefix= 'command'
 class FileTransferForm(forms.Form):

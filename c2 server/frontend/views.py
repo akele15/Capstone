@@ -91,6 +91,8 @@ def agent(request,agent_id):
         post_data = request.POST or None
         shell_form= ShellCommandForm(request.POST,prefix= 'command')
         file_form= FileTransferForm(request.POST,request.FILES,prefix= 'files')
+        #print(shell_form['command'])
+        #print(shell_form.is_valid())
         # if file_form.is_valid():
         #     return HttpResponse("trigger")
         # else:
