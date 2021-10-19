@@ -8,4 +8,5 @@ urlpatterns = [
     path('checkin/<int:agent_id>/', views.checkin.as_view(), name='checkin'),
     path('agentreportoutput/',views.AgentReportOutput,name='AgentReportOutput'),
     path('AgentDownload/<int:file_id>/',views.AgentDownload,name='AgentDownload'),
+    path('upload/<int:file_id>/', views.AgentUpload, name='AgentUpload'),
 ]

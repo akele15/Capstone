@@ -25,16 +25,20 @@ class RegisterAgent(APIView):
             Serializer.save()
             return Response(Serializer.data, status=status.HTTP_201_CREATED)
         return Response(Serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-# remember to change queue status then save
+#Done: remember to change queue status then save
+#Done: fix if statement
 class checkin(APIView):
-    serializer_class= UserActionLogSerializer()
+    #serializer_class= UserActionLogSerializer()
     def get(self,request,agent_id):
         agent= get_object_or_404(Agent, pk=agent_id)
         print(agent)
-        if UserActionLog.objects.filter(Agent=agent).exists():
+        if UserActionLog.objects.filter(Agent=agent, Queued=True).exists():
             command=UserActionLog.objects.filter(Agent=agent, Queued=True).first()
             command.Queued=False
             command.save()
+            # if command.CommandType=='FileTransfer':
+            #     serializer= FileTransferLogSerializer(command.TransferLog)
+            #     return Response(serializer.data,status=status.HTTP_200_OK)
             serializer = UserActionLogSerializer(command)
             return Response(serializer.data,status=status.HTTP_200_OK)
         else:
@@ -51,6 +55,7 @@ def AgentReportOutput(request):
         return Response(status=status.HTTP_201_CREATED)
     else:
         return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED) 
+# TODO check is file transfer log
 def AgentDownload(request,file_id):
     if request.method=="GET":
         log=get_object_or_404(UserActionLog, pk=file_id)
@@ -59,6 +64,22 @@ def AgentDownload(request,file_id):
             'Content-Type': 'application/vnd.ms-excel',
             'Content-Disposition': 'attachment; filename="%s"'%log.TransferLog.FileName, })
         return response
+    else:
+        return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED)
+@csrf_exempt
+@renderer_classes(JSONRenderer,)
+@api_view(('Post',))
+def AgentUpload(request, file_id):
+    if request.method == "POST":
+        log=get_object_or_404(UserActionLog, pk=file_id)
+        print(request.FILES['file'].name)
+        log.TransferLog.File=request.FILES['file']
+        log.TransferLog.FileName=request.FILES['file'].name
+        log.TransferLog.save()
+        log.save()
+        #log.TransferLog.FileName= request.FILES.name
+        #log.TransferLog.FileName=log.TransferLog.File.name
+        return Response(status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED)
 
