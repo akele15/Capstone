@@ -1,7 +1,8 @@
-<!-- registration/login.html -->
-<html>
 
-<body>
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+
 <h1>Login Page </h1>
 
 <form action="" method="POST">
@@ -12,7 +13,5 @@
 {{ form.as_p }}
 <input type="submit" name="submit" value="Log in"/>
 </form>
+{% endblock %}
 
-</html>
-
-</body>

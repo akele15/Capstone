@@ -11,6 +11,8 @@ from .forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required 
 from django.shortcuts import get_object_or_404
+from filehash import FileHash
+import os, hashlib,time
 #from filehash import FileHash
 # Create your views here.
 class InviteCodeView(View):
@@ -27,7 +29,7 @@ class InviteCodeView(View):
             print("true")
             aset=InviteCode.objects.last()
             print(aset.Code)
-            stuff= InviteCode.objects.all()[0].Code
+            stuff= InviteCode.objects.last().Code
             print(stuff)
             return render(request,'frontend/invitecode.html',{"invite_code":stuff})
         else:
@@ -52,7 +54,7 @@ def user_login(request):
         if user is None:
             return redirect('/login')
         login(request,user)
-        return HttpResponse("valid credentials.")
+        return redirect('/agentselect')
     else:
         form=UserForm()
         return render(request, "frontend/login2.html", {'form':form})
@@ -73,17 +75,17 @@ def user_register(request):
                 new_user = User.objects.create_user(form.cleaned_data['username'] ,'',form.cleaned_data['password'])
                 print("saving")
                 new_user.save()
-                return HttpResponse("registered")
+                return redirect('/login')
             else:
-                return redirect("/register")
+                return redirect('/register')
         else:
-            return redirect("/register")
+            return redirect('/register')
         #render(request,"frontend/register.html",{'form':form})
     else:
         form=RegisterForm()
         return render(request,"frontend/register.html",{'form':form})
     #return render(request,"frontend/login2.html")
-#@login_required
+@login_required
 def agent(request,agent_id):
     the_id= get_object_or_404(Agent, pk=agent_id)
     if request.method=="POST":
@@ -136,8 +138,9 @@ def agent(request,agent_id):
                 file_log.direction='Download'
                 #TODO write hash function
                 #file_log.Hash= 
-                #sha1hasher = FileHash('sha1')
-                #sha1hasher.hash_file(file_log.File)
+                # sha1hasher = FileHash('sha1')
+                # print(type(file_log.File.open(mode='rb')))
+                # file_log.Hash= sha1hasher.hash_file(file_log.File.open())
                 file_log.save()
                 command_log.TransferLog=file_log
                 command_log.save()
@@ -147,6 +150,8 @@ def agent(request,agent_id):
                 # return render(request,"frontend/agent.html",{'form':form, 'id':agent_id,'file_form':file_form})
                 # return HttpResponse("file form valid d saved")
             if file_form.cleaned_data['direction']=='Upload':
+                #timer
+                t0 = time.time()
                 command_log=UserActionLog()
                 command_log.User=request.user
                 command_log.Agent=Agent.objects.get(pk=agent_id)
@@ -159,9 +164,15 @@ def agent(request,agent_id):
                 file_log.FileName=file_log.File.name
                 file_log.direction='Upload'
                 #file_log.Path= file_form.cleaned_data['path_to_file']
+                file_log.Hash= hashlib.sha256(file_log.File.file.read()).hexdigest()
                 file_log.save()
+                # sha1hasher = FileHash('sha1')
+                # # filename_base, filename_ext = os.path.splitext(file_log.FileName)
+                # file_log.Hash= sha1hasher.hash_file(file_log.File.open() )
                 command_log.TransferLog=file_log
                 command_log.save()
+                t1 = time.time()
+                print(t1-t0)
                 # form=ShellCommandForm()
                 # file_form= FileTransferForm()
                 # return render(request,"frontend/agent.html",{'form':form, 'id':agent_id,'file_form':file_form})
@@ -180,11 +191,45 @@ def agent(request,agent_id):
         file_form= FileTransferForm()
         return render(request,"frontend/agent.html",{'form':form, 'id':agent_id,'file_form':file_form})
         return HttpResponse("agent"+" "+ str(agent_id))
+@login_required
 def agentselect(request):
     agent_list=Agent.objects.all()
     context = {'agent_list': list(agent_list)}
     #return HttpResponse("hi")
     return render(request, 'frontend/agentselect.html', context)
+@login_required
+def output(request):
+    output_list= UserActionLog.objects.all()
+    user_list = User.objects.all().distinct()
+    agent_list = Agent.objects.all().distinct()
+    context= {
+        'log_list': list(output_list),
+        'user_list': list(user_list),
+        'agent_list': list(agent_list),
+        }
+    return render(request, 'frontend/output.html', context)
+@login_required
+def ViewFileTransfer(request):
+    output_list= UserActionLog.objects.all().exclude(TransferLog=FileTransferLog())
+    user_list = User.objects.all().distinct()
+    agent_list = Agent.objects.all().distinct()
+    context= {
+        'log_list': list(output_list),
+        'user_list': list(user_list),
+        'agent_list': list(agent_list),
+    }
+    return render(request, 'frontend/ViewFileTransfer.html', context)
+@login_required
+def DownloadFiles(request,file_log_id):
+    if request.method=="GET":
+        log=get_object_or_404(FileTransferLog, pk=file_log_id)
+        data=log.File
+        response = HttpResponse(data, headers={
+            'Content-Type': 'application/vnd.ms-excel',
+            'Content-Disposition': 'attachment; filename="%s"'%log.FileName, })
+        return response
+    else:
+        return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED)
 
 # def test(request):
 #     if request.method=="POST":

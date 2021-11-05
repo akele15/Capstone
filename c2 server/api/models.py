@@ -40,6 +40,7 @@ class UserActionLog(models.Model):
     User= models.ForeignKey(User, on_delete=models.PROTECT)
     Command = models.TextField()
     Output = models.TextField()
+    Date = models.DateTimeField(default=timezone.now)
     CommandTypeEnumChoice=(
         ('FileTransfer','FileTransfer'),
         ('ShellCommand','ShellCommand')

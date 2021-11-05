@@ -1,4 +1,6 @@
 
+{% extends 'frontend/base.html' %}
+
 {% block content %}
 
   {% if form.errors %}
@@ -9,17 +11,23 @@
 <h1>Agent:{{id}}</h1>
   <form method="post" action="">
     {% csrf_token %}
+    <div class="form-outline">
+      
+      <textarea class="form-control" id="id_command-command" name="command-command" rows="4" placeholder="Command"></textarea>
+      <!-- <label class="form-label" for="command-command"> Command</label> -->
+   
+    </div>
     <table>
           <!-- <tr>
         <td>{{ form.action_type.label_tag }}</td>
         <td>{{ form.action_type }}</td>
       </tr> -->
-          <tr>
+          <!-- <tr>
         <td>{{ form.command.label_tag }}</td>
         <td>{{ form.command }}</td>
-      </tr>
+      </tr> -->
       </table>
-      <input type="submit" value="queue" />
+      <button type="submit" class="btn btn-primary mb-2">queue</button>
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
   <form method="post" action="" enctype="multipart/form-data">
@@ -32,26 +40,49 @@
       <tr>
         <!-- <td><input type="file" name="upload"></td> -->
       </tr>
-      <tr>
+      <tr id="direction">
         <td>{{ file_form.direction.label_tag }}</td>
         <td>{{ file_form.direction }}</td>
       </tr>
-      <tr>
+      <tr id="file upload">
         <td>{{ file_form.file_to_upload.label_tag }}</td>
         <td>{{ file_form.file_to_upload }}</td>
       </tr>
-      <tr>
+      <tr id="filename">
         <td>{{ file_form.filename.label_tag }}</td>
         <td>{{ file_form.filename }}</td>
       </tr>
-      <tr>
+      <tr id="path">
         <td>{{ file_form.path_to_file.label_tag }}</td>
         <td>{{ file_form.path_to_file }}</td>
       </tr>
 
       </table>
-    <input type="submit" value="queue" />
+
+
+    <button type="submit" class="btn btn-primary mb-2">queue</button>
+    <!-- <input type="submit" value="queue" /> -->
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
- 
+ <script>
+    var select=document.getElementById("id_files-direction")
+    select.onchange= function(){
+      if (select.value=="Upload") {
+        document.getElementById("direction").style.display = "block";
+        document.getElementById("file upload").style.display = "block";
+        document.getElementById("filename").style.display = "none";
+        document.getElementById("path").style.display = "none";
+      }
+      else{
+        document.getElementById("direction").style.display = "block";
+        document.getElementById("file upload").style.display = "none";
+        document.getElementById("filename").style.display = "block";
+        document.getElementById("path").style.display = "block";
+      }
+
+
+    }
+
+
+ </script>
 {% endblock %}

@@ -1,0 +1,203 @@
+
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+
+
+
+
+
+<select id="UserSelect" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onChange="hidebutgood()">
+<option selected>Filter by user</option>
+{% for person in user_list %}
+<option>{{person}}</option>
+{% endfor %}
+</select>
+<select id="AgentSelect" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onChange="hidebutgood()">
+  <option selected>Filter by Agent</option>
+{% for agent in agent_list %}
+<option value="{{agent.id}}">{{agent.id}}:{{agent}}</option>
+{% endfor %}
+</select>
+Start Date:<input id="StartDate" type="date" onChange="hidebutgood()" >
+End Date:<input id="EndDate" type="date" onChange="hidebutgood()">
+
+
+{% if log_list %}
+
+
+{% for log in log_list %}
+<div class="row">
+    <!-- <div class="col-md-*"> -->
+
+<div class="card" style="width: 100%;">
+<div class="card-body">
+    <!-- id:{{ agent.id }} <br\> -->
+    <input type="hidden" name="User" value="{{log.User}}" />
+    <input type="hidden" name="User" value="{{log.Agent.id}}" />
+    <input type="hidden" name="User" value="{{log.Date}}" />
+  <h5 class="card-title">User: {{log.User}} </h5>
+  <div class="card-text"><b>Date:</b> Placeholder</div>
+    <div class="card-text"><b>Command:</b>{{log.Command}}</div>
+    {% if log.Output %}
+    <div class="card-text"><b>Output:</b></div>
+    {% for out in log.Output.splitlines %}
+    <div class="card-text">{{out}}</div>
+    {% endfor %}
+    {% else %}
+    <div class="card-text">Output:No output yet</div>
+
+{% endif %}
+  <!-- <div class="card-text"><b>Output:</b>{{log.Output}}</div> -->
+  
+    <div class="card-text"><b>Agent:</b> {{log.Agent}}</div>
+
+<!-- </div>  -->
+</div>
+</div> </div>
+
+{% endfor %}
+
+{% else %}
+<p>No agents are available.</p>
+{% endif %}
+<script>
+
+function hidebutgood(){
+    var userE = document.getElementById("UserSelect");
+    var agentE = document.getElementById("AgentSelect");
+    var StartDateE = document.getElementById("StartDate");
+    var EndDateE = document.getElementById("EndDate");
+
+    var userBoxInput = userE.options[userE.selectedIndex].value;
+    var agentBoxInput = agentE.options[agentE.selectedIndex].value;
+    var StartDateInput = StartDateE.value;
+    var EndDateInput = EndDateE.value;
+    console.log(userBoxInput)
+    console.log(agentBoxInput)
+    console.log(StartDateInput)
+    console.log(EndDateInput)
+    var allItems = document.querySelectorAll(".row .card");
+    for (var i = 0; i < allItems.length; i += 1){
+      allItems[i].style.display = "none";
+      var userDivValue =allItems[i].getElementsByTagName("input")[0].value
+      var agentDivValue =allItems[i].getElementsByTagName("input")[1].value
+      var dateDivValue =allItems[i].getElementsByTagName("input")[2].value
+      if((userBoxInput == "Filter by user" || userBoxInput === userDivValue)&&(agentBoxInput === agentDivValue||agentBoxInput === "Filter by Agent")&&(StartDateInput===""||StartDateInput<= dateDivValue)&&(EndDateInput ===""|| EndDateInput >= dateDivValue)){
+        allItems[i].style.display = "block";
+      }
+  
+
+    }
+  }
+
+  function hide(){
+    var userE = document.getElementById("UserSelect");
+    var agentE = document.getElementById("AgentSelect");
+    var userBoxInput = userE.options[userE.selectedIndex].value;
+    var agentBoxInput = agentE.options[agentE.selectedIndex].value;
+    var allItems = document.querySelectorAll(".row .card");
+    for (var i = 0; i < allItems.length; i += 1){
+      var userDivValue =allItems[i].getElementsByTagName("input")[0].value
+      var agentDivValue =allItems[i].getElementsByTagName("input")[1].value
+      allItems[i].style.display = "block"
+      if (userBoxInput == "Filter by user"){
+        if( agentBoxInput != agentDivValue){
+          allItems[i].style.display = "none";
+        }
+      }
+      else if(agentBoxInput == "Filter by Agent" ){
+        if( userBoxInput != userDivValue){
+          allItems[i].style.display = "none";
+        }
+      }
+      else{
+        if(userBoxInput == userDivValue && agentBoxInput == agentDivValue){
+          allItems[i].style.display = "block";
+        }
+        else{
+          allItems[i].style.display = "none";
+        }
+      }
+    }
+  }
+  function shouldhide(){
+    var userE = document.getElementById("UserSelect");
+    var agentE = document.getElementById("AgentSelect");
+    var userBoxInput = userE.options[userE.selectedIndex].value;
+    var agentBoxInput = agentE.options[agentE.selectedIndex].value;
+    var allItems = document.querySelectorAll(".row .card");
+    
+    for (var i = 0; i < allItems.length; i += 1){
+      allItems[i].style.display = "block"
+      var userDivValue =allItems[i].getElementsByTagName("input")[0].value
+      var agentDivValue =allItems[i].getElementsByTagName("input")[1].value
+      if (userBoxInput != "Filter by user" || agentBoxInput != "Filter by Agent" ){
+        if (userDivValue == userBoxInput || agentDivValue == userBoxInput){
+          allItems[i].style.display = "block";
+        }
+        else{
+          allItems[i].style.display = "none";
+        }
+      }
+      else{
+        allItems[i].style.display = "block";
+      }
+    }
+  }
+
+
+  function hideUser(){
+    var e = document.getElementById("UserSelect");
+    var boxInput = e.options[e.selectedIndex].value;
+    var allItems = document.querySelectorAll(".row .card");
+    console.log(boxInput)
+    for (var i = 0; i < allItems.length; i += 1) {
+      var divValue =allItems[i].getElementsByTagName("input")[0].value
+      if (boxInput != "Filter by user") {
+        if (divValue != boxInput){
+          allItems[i].style.display = "none";
+          // console.log(allItems[i])
+        }
+        else{
+          allItems[i].style.display = "block";
+        }
+    }
+    else{
+      allItems[i].style.display = "block";
+    }
+
+  }
+  hideAgent()
+  }
+
+  function hideAgent(){
+    var e = document.getElementById("AgentSelect");
+    var boxInput = e.options[e.selectedIndex].value;
+    var allItems = document.querySelectorAll(".row .card");
+    console.log(boxInput)
+    for (var i = 0; i < allItems.length; i += 1) {
+      var divValue =allItems[i].getElementsByTagName("input")[1].value
+      if (boxInput != "Filter by Agent") {
+        if (divValue != boxInput){
+          allItems[i].style.display = "none";
+        }
+        else{
+          allItems[i].style.display = "block";
+        }
+    }
+    else{
+      allItems[i].style.display = "block";
+    }
+
+  }
+  hideUser()
+  }
+
+  </script>
+
+
+
+
+{% endblock %}
+

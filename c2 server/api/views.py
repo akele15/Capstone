@@ -12,6 +12,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
+import hashlib
 # Create your views here.
 class RegisterAgent(APIView):
     serializer_class= AgentSerializer()
@@ -75,6 +76,7 @@ def AgentUpload(request, file_id):
         print(request.FILES['file'].name)
         log.TransferLog.File=request.FILES['file']
         log.TransferLog.FileName=request.FILES['file'].name
+        log.TransferLog.Hash=hashlib.sha256(log.TransferLog.File.file.read()).hexdigest()
         log.TransferLog.save()
         log.save()
         #log.TransferLog.FileName= request.FILES.name

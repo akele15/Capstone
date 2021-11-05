@@ -1,9 +1,30 @@
+{% extends 'frontend/base.html' %}
+{%block content %}
 {% if agent_list %}
-<ul>
+<!-- <ul> -->
+    <div class="row">
 {% for agent in agent_list %}
-    <li><a href="/agent/{{ agent.id }}/">{{ agent.name }}</a></li>
+    <!-- <li><a href="/agent/{{ agent.id }}/">{{ agent.name }}</a></li>
+    bootstrap <br/> -->
+    
+    <div class="col-md-3">
+    <div class="card" style="width: 18rem;">
+        <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+        <div class="card-body">
+            <!-- id:{{ agent.id }} <br\> -->
+          <h5 class="card-title">{{ agent.name }}</h5>
+          <p class="card-text"><b>Last Checkin Date:</b>{{ agent.LastCheckinDate }}</p>
+          <p class="card-text"><b>Agent ID:</b>{{ agent.id }}</p>
+          <a href="/agent/{{ agent.id }}/" class="btn btn-primary">Interact</a>
+        </div>
+      </div> </div> 
+     
 {% endfor %}
-</ul>
+</div>
+<!-- </ul> -->
 {% else %}
 <p>No agents are available.</p>
 {% endif %}
+{% endblock %}
+
+

@@ -1,0 +1,1 @@
+python3 -m nuitka  agent.py --onefile --linux-onefile-icon agent.png
