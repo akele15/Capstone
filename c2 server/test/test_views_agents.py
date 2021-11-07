@@ -93,6 +93,29 @@ def test_output_correct(client,test_agent,test_user):
     assert UserActionLog.objects.first().id ==1
     assert response.status_code==201
     assert UserActionLog.objects.first().Output == output
+# agent download 
+@pytest.mark.skip(reason="files don't get cleaned up after test")
+@pytest.mark.django_db  
+def test_download_correct(client,test_agent,test_user):
+    file_log= FileTransferLog(
+        User= User.objects.first(),
+        File = open("/code/test/test_upload.txt",'rb')
+    )
+    file_log.save()
+    log= UserActionLog(
+        User= User.objects.first(),
+        Command = "ls -al",
+        CommandType ='ShellCommand',
+        Agent= Agent.objects.first(),
+        Queued = True,
+        TransferLog = file_log,
+    )
+    log.save()
+    response =client.get("/api/AgentDownload/" +str(log.id), follow=True)
+    assert response.status_code == 200
+
+
+
 
 # @pytest.mark.django_db  
 # def test_checkin_agent_No_command(c):

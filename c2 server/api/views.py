@@ -13,10 +13,11 @@ from django.http import JsonResponse
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
 import hashlib
+from django.utils import timezone
 # Create your views here.
 class RegisterAgent(APIView):
     serializer_class= AgentSerializer()
-# not gonna lie not sure what arguments post is suppose to take
+
     def post(self, request):
         print(request.data)
         Serializer= AgentSerializer( data=request.data)
@@ -36,6 +37,7 @@ class checkin(APIView):
         if UserActionLog.objects.filter(Agent=agent, Queued=True).exists():
             command=UserActionLog.objects.filter(Agent=agent, Queued=True).first()
             command.Queued=False
+            command.Date=timezone.now()
             command.save()
             # if command.CommandType=='FileTransfer':
             #     serializer= FileTransferLogSerializer(command.TransferLog)
@@ -54,8 +56,8 @@ def AgentReportOutput(request):
         log.Output=request.POST.get("output")
         log.save()
         return Response(status=status.HTTP_201_CREATED)
-    else:
-        return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED) 
+    # else:
+    #     return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED) 
 # TODO check is file transfer log
 def AgentDownload(request,file_id):
     if request.method=="GET":

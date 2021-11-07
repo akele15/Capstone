@@ -4,6 +4,7 @@ from django.contrib.auth.views import LoginView,LogoutView
 from frontend.views import *
 from django.contrib.auth import views as auth_views
 urlpatterns = [
+    path('', views.user_login, name='login'),
     path('invitecode/', InviteCodeView.as_view(), name="InviteCodeView"),
     path('login/', views.user_login, name='login'),
     path('register/', views.user_register, name='register'),

@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 
 MEDIA_ROOT= '/code/files'
 # Application definition
-
+LOGOUT_REDIRECT_URL = "login"
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

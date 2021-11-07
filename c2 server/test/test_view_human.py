@@ -69,8 +69,9 @@ def test_login_correct(test_user,client):
     data= {'username':'john', 'password':'johnpassword','next':""}
     response= client.post("/login/",data)
     user=User.objects.first()
-    assert response.status_code ==200
+    assert response.status_code ==302
     assert User.objects.all().count()==1
+    assert response.url == "/agentselect"
 
 # Register
 @pytest.mark.django_db
@@ -130,9 +131,10 @@ def test_register_correct(create_invite,client):
         "password":"password",
         "confirm_password":"password"
     }
-    response= client.post("/register/", form_data,follow=True)
-    assert response.status_code ==200
-    assert response.content ==b'registered'
+    response= client.post("/register/", form_data)
+    #,follow=True)
+    assert response.status_code == 302
+    assert response.url == "/login"
 # upload tests
 @pytest.mark.django_db
 def test_agent_file_form_invalid(test_user,client,test_agent):
@@ -180,7 +182,6 @@ def test_agent_agent_get(test_user,client,test_agent):
     assert response.status_code==200
 
 # download tests
-#@pytest.mark.skip(reason="think I need to figure out how to implement prefix in test ")
 @pytest.mark.django_db
 def test_agent_file_form_download(test_user,client,test_agent):
     form_data={
@@ -202,10 +203,29 @@ def test_agent_file_form_download(test_user,client,test_agent):
     assert file_log.FileName == 'dummy.txt'
 
 
+    
+#output 
+@pytest.mark.django_db
+def test_output(test_user,client,test_agent):
+    client.force_login(User.objects.all().first())
+    response= client.get('/output/')
+    assert response.status_code ==200
 
+#filehistory
+@pytest.mark.django_db
+def test_ViewFileTransfer(test_user,client,test_agent):
+    client.force_login(User.objects.all().first())
+    response= client.get('/ViewFileTransfer/')
+    assert response.status_code ==200
+ #logout
+@pytest.mark.django_db
+def test_logout(test_user,client,test_agent):
+    client.force_login(User.objects.all().first())
+    response= client.get('/logout/')
+    assert response.status_code ==302
+    assert response.url =='/login/'
 
-    #assert response.content ==''
-
+    
 
 
 

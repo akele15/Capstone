@@ -37,7 +37,7 @@ End Date:<input id="EndDate" type="date" onChange="hidebutgood()">
     <input type="hidden" name="User" value="{{log.Agent.id}}" />
     <input type="hidden" name="User" value="{{log.Date}}" />
   <h5 class="card-title">User: {{log.User}} </h5>
-  <div class="card-text"><b>Date:</b> Placeholder</div>
+  <div class="card-text"><b>Date:</b> {{log.Date}}</div>
     <div class="card-text"><b>Command:</b>{{log.Command}}</div>
     {% if log.Output %}
     <div class="card-text"><b>Output:</b></div>

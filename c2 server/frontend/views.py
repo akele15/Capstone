@@ -54,6 +54,8 @@ def user_login(request):
         if user is None:
             return redirect('/login')
         login(request,user)
+        if user.is_superuser:
+            return redirect('/invitecode')
         return redirect('/agentselect')
     else:
         form=UserForm()
@@ -199,7 +201,7 @@ def agentselect(request):
     return render(request, 'frontend/agentselect.html', context)
 @login_required
 def output(request):
-    output_list= UserActionLog.objects.all()
+    output_list= UserActionLog.objects.all().filter(CommandType='ShellCommand')
     user_list = User.objects.all().distinct()
     agent_list = Agent.objects.all().distinct()
     context= {

