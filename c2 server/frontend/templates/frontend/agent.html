@@ -66,7 +66,25 @@
   </form>
  <script>
     var select=document.getElementById("id_files-direction")
-    select.onchange= function(){
+    // select.onchange= function(){
+    //   if (select.value=="Upload") {
+    //     document.getElementById("direction").style.display = "block";
+    //     document.getElementById("file upload").style.display = "block";
+    //     document.getElementById("filename").style.display = "none";
+    //     document.getElementById("path").style.display = "none";
+    //   }
+    //   else{
+    //     document.getElementById("direction").style.display = "block";
+    //     document.getElementById("file upload").style.display = "none";
+    //     document.getElementById("filename").style.display = "block";
+    //     document.getElementById("path").style.display = "block";
+    //   }
+
+
+    // }
+
+
+    function hide(){
       if (select.value=="Upload") {
         document.getElementById("direction").style.display = "block";
         document.getElementById("file upload").style.display = "block";
@@ -82,7 +100,11 @@
 
 
     }
-
+    select.onchange=() =>hide()
+    select.onload= () =>hide()
+    // select.change()
+    window.onload=hide()
+    console.log(select.value)
 
  </script>
 {% endblock %}

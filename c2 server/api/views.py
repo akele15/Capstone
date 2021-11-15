@@ -17,13 +17,10 @@ from django.utils import timezone
 # Create your views here.
 class RegisterAgent(APIView):
     serializer_class= AgentSerializer()
-
     def post(self, request):
         print(request.data)
         Serializer= AgentSerializer( data=request.data)
         if Serializer.is_valid():
-            # if request.user == Workspace.objects.get(id=request.POST.get('workspaceid')).owner:
-                #this actually saves the data in the database
             Serializer.save()
             return Response(Serializer.data, status=status.HTTP_201_CREATED)
         return Response(Serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -58,7 +55,7 @@ def AgentReportOutput(request):
         return Response(status=status.HTTP_201_CREATED)
     # else:
     #     return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED) 
-# TODO check is file transfer log
+
 def AgentDownload(request,file_id):
     if request.method=="GET":
         log=get_object_or_404(UserActionLog, pk=file_id)
