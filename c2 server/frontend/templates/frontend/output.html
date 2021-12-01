@@ -36,6 +36,12 @@ End Date:<input id="EndDate" type="date" onChange="hidebutgood()">
     <input type="hidden" name="User" value="{{log.User}}" />
     <input type="hidden" name="User" value="{{log.Agent.id}}" />
     <input type="hidden" name="User" value="{{log.Date}}" />
+
+
+    <input type="hidden" id="year" value="{{ log.Date | date:"Y" }}" />
+    <input type="hidden" id="month" value="{{ log.Date |date:"m" }}" />
+    <input type="hidden" id="day" value="{{ log.Date |date:"d"}}" />
+
   <h5 class="card-title">User: {{log.User}} </h5>
   <div class="card-text"><b>Date:</b> {{log.Date}}</div>
     <div class="card-text"><b>Command:</b>{{log.Command}}</div>
@@ -71,8 +77,18 @@ function hidebutgood(){
 
     var userBoxInput = userE.options[userE.selectedIndex].value;
     var agentBoxInput = agentE.options[agentE.selectedIndex].value;
-    var StartDateInput = StartDateE.value;
-    var EndDateInput = EndDateE.value;
+    if (StartDateE.value=="") {
+      var StartDateInput=""
+    } else {
+      var StartDateInput = new Date( StartDateE.value);
+    }
+    if (EndDateE.value=="") {
+      var EndDateInput=""
+    } else {
+      var EndDateInput = new Date( EndDateE.value);
+    }
+    // var StartDateInput = StartDateE.value;
+    // var EndDateInput = EndDateE.value;
     console.log(userBoxInput)
     console.log(agentBoxInput)
     console.log(StartDateInput)
@@ -83,7 +99,15 @@ function hidebutgood(){
       var userDivValue =allItems[i].getElementsByTagName("input")[0].value
       var agentDivValue =allItems[i].getElementsByTagName("input")[1].value
       var dateDivValue =allItems[i].getElementsByTagName("input")[2].value
-      if((userBoxInput == "Filter by user" || userBoxInput === userDivValue)&&(agentBoxInput === agentDivValue||agentBoxInput === "Filter by Agent")&&(StartDateInput===""||StartDateInput<= dateDivValue)&&(EndDateInput ===""|| EndDateInput >= dateDivValue)){
+      var dateYear= allItems[i].getElementsByTagName("input")[3].value
+      var dateMonth= allItems[i].getElementsByTagName("input")[4].value
+      var dateDay= allItems[i].getElementsByTagName("input")[5].value
+      console.log("logging")
+      console.log(dateYear);console.log(dateMonth);console.log(dateDay);
+      var intlStandDateDivValue= new Date(dateYear +"-"+dateMonth+"-"+dateDay)
+      dateDivValue=intlStandDateDivValue
+      console.log("date:"+ dateDivValue)
+      if((userBoxInput == "Filter by user" || userBoxInput === userDivValue)&&(agentBoxInput === agentDivValue||agentBoxInput === "Filter by Agent")&&(StartDateInput==""||StartDateInput<= dateDivValue)&&(EndDateInput ==""|| EndDateInput >= dateDivValue)){
         allItems[i].style.display = "block";
       }
   

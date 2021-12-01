@@ -24,12 +24,7 @@ def create_agent():
     anAgent.name= "aName"
     anAgent.LastCheckinDate= timezone.now()
     anAgent.save()
-
-
 # tests
-
-
-
 
 @pytest.mark.django_db
 def test_InviteCode_create():

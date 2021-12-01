@@ -53,8 +53,6 @@ def AgentReportOutput(request):
         log.Output=request.POST.get("output")
         log.save()
         return Response(status=status.HTTP_201_CREATED)
-    # else:
-    #     return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED) 
 
 def AgentDownload(request,file_id):
     if request.method=="GET":
@@ -84,51 +82,3 @@ def AgentUpload(request, file_id):
     else:
         return Response(status=status.HTTP_404_METHOD_NOT_ALLOWED)
 
-# class MyUploadView(APIView):
-#     parser_class = (FileUploadParser,)
-
-#     def put(self, request, format=None):
-#         if 'file' not in request.data:
-#             raise ParseError("Empty content")
-#         id= request['id']
-#         f = request.data['file']
-#         log=UserActionLog.objects.filter(id=id).first().FileTransferLog
-
-#         log.File=f
-#         log.save()
-#         return Response(status=status.HTTP_201_CREATED)
-
-
-
-# class checkin(viewsets.ReadOnlyModelViewSet,agent_id):
-#     """
-#     Lists information related to the current user.
-#     """
-#     serializer_class = UserActionLogSerializer
-#     def get(self):
-#         user = self.request.user.id
-#         return User.objects.filter(id=user)
-
-
-
-# @api_view(('GET',))
-# @renderer_classes(JSONRenderer,)
-# def checkin(request,agent_id):
-#     if request.method=="GET":
-#         # return HttpResponse("hi")
-#         agent= get_object_or_404(Agent, pk=agent_id)
-#         if UserActionLog.objects.filter(Agent=agent).exists():
-#             print("before")
-#             #command=UserActionLog.objects.filter(Agent=agent).first()
-#             print("after")
-#             #command.Queued= False
-#             #command.save()
-#             return HttpResponse("stuff")
-#             #serializer = UserActionLogSerializer(command)
-#             #serializer.serialize("json", command, ignorenonexistent=True)
-#             #return Response(serializer.data,status=status.HTTP_201_CREATED)
-#         else:
-#             #empty 
-#             return HttpResponse("placeholder")
-#     else: 
-#         return HttpResponse("error handling")    

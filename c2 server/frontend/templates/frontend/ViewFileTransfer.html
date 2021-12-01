@@ -55,7 +55,11 @@
                   <input type="hidden" id="datediv" value="{{log.TransferLog.Time.isoformat }}" />
                   <input type="hidden" id="filename" value="{{log.TransferLog.FileName}}" />
                   <input type="hidden" id="hash" value="{{log.TransferLog.Hash}}" />
-        
+
+
+                  <input type="hidden" id="year" value="{{ log.TransferLog.Time|date:"Y" }}" />
+          <input type="hidden" id="month" value="{{ log.TransferLog.Time|date:"m" }}" />
+          <input type="hidden" id="day" value="{{ log.TransferLog.Time|date:"d"}}" />
                     <!-- id:{{ agent.id }} <br\> -->
                   <h5 class="card-title">User: {{log.TransferLog.User}} </h5>
                   <div class="card-text"><b>Date:</b> {{log.TransferLog.Time}}</div>
@@ -88,8 +92,18 @@ function hidebutgood(){
 
     var userBoxInput = userE.options[userE.selectedIndex].value;
     var agentBoxInput = agentE.options[agentE.selectedIndex].value;
-    var StartDateInput = StartDateE.value;
-    var EndDateInput = EndDateE.value;
+    //stuff I just chanaged 
+    if (StartDateE.value=="") {
+      var StartDateInput=""
+    } else {
+      var StartDateInput = new Date( StartDateE.value);
+    }
+    if (EndDateE.value=="") {
+      var EndDateInput=""
+    } else {
+      var EndDateInput = new Date( EndDateE.value);
+    }
+    
     var filenameInput = filenameE.value;
     var HashInput = HashE.value;
     console.log("user: "+userBoxInput)
@@ -106,6 +120,12 @@ function hidebutgood(){
       var dateDivValue =allItems[i].getElementsByTagName("input")[2].value
       var filenameDivValue =allItems[i].getElementsByTagName("input")[3].value
       var hashDivValue =allItems[i].getElementsByTagName("input")[4].value
+      var dateYear= allItems[i].getElementsByTagName("input")[5].value
+      var dateMonth= allItems[i].getElementsByTagName("input")[6].value
+      var dateDay= allItems[i].getElementsByTagName("input")[7].value
+      var intlStandDateDivValue= new Date(dateYear +"-"+dateMonth+"-"+dateDay)
+      console.log(":yo:" + intlStandDateDivValue)
+      dateDivValue= intlStandDateDivValue
 
 
       // var dateDivValue =document.getElementById("datediv").value
@@ -124,43 +144,43 @@ function hidebutgood(){
     }
   }
 
-  function hide(){
-    var userE = document.getElementById("UserSelect");
-    var agentE = document.getElementById("AgentSelect");
-    var userBoxInput = userE.options[userE.selectedIndex].value;
-    var agentBoxInput = agentE.options[agentE.selectedIndex].value;
-    console.log(userBoxInput)
-    console.log(agentBoxInput)
-    var allItems = document.querySelectorAll(".card");
-    for (var i = 0; i < allItems.length; i += 1){
-      var userDivValue =allItems[i].getElementsByTagName("input")[0].value
-      var agentDivValue =allItems[i].getElementsByTagName("input")[1].value
-      console.log(i)
-    console.log(userDivValue)
-    console.log(agentDivValue)
-      allItems[i].style.display = "block"
-      if (userBoxInput == "Filter by user"){
-        if( agentBoxInput != agentDivValue){
-          allItems[i].style.display = "none";
-        }
-      }
-      else if(agentBoxInput == "Filter by Agent" ){
-        if( userBoxInput != userDivValue){
-          allItems[i].style.display = "none";
-        }
-      }
-      else{
-        if(userBoxInput == userDivValue && agentBoxInput == agentDivValue){
-          allItems[i].style.display = "block";
-        }
-        else{
-          allItems[i].style.display = "none";
-        }
-      }
-    }
-  }
+  // function hide(){
+  //   var userE = document.getElementById("UserSelect");
+  //   var agentE = document.getElementById("AgentSelect");
+  //   var userBoxInput = userE.options[userE.selectedIndex].value;
+  //   var agentBoxInput = agentE.options[agentE.selectedIndex].value;
+  //   console.log(userBoxInput)
+  //   console.log(agentBoxInput)
+  //   var allItems = document.querySelectorAll(".card");
+  //   for (var i = 0; i < allItems.length; i += 1){
+  //     var userDivValue =allItems[i].getElementsByTagName("input")[0].value
+  //     var agentDivValue =allItems[i].getElementsByTagName("input")[1].value
+  //     console.log(i)
+  //   console.log(userDivValue)
+  //   console.log(agentDivValue)
+  //     allItems[i].style.display = "block"
+  //     if (userBoxInput == "Filter by user"){
+  //       if( agentBoxInput != agentDivValue){
+  //         allItems[i].style.display = "none";
+  //       }
+  //     }
+  //     else if(agentBoxInput == "Filter by Agent" ){
+  //       if( userBoxInput != userDivValue){
+  //         allItems[i].style.display = "none";
+  //       }
+  //     }
+  //     else{
+  //       if(userBoxInput == userDivValue && agentBoxInput == agentDivValue){
+  //         allItems[i].style.display = "block";
+  //       }
+  //       else{
+  //         allItems[i].style.display = "none";
+  //       }
+  //     }
+  //   }
+  // }
 
-  </script>
+  // </script>
 
 
 

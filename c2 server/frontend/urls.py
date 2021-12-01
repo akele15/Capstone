@@ -14,10 +14,4 @@ urlpatterns = [
     path('output/', views.output, name='output'),
     path('ViewFileTransfer/', views.ViewFileTransfer, name='ViewFileTransfer'),
     path('DownloadFiles/<int:file_log_id>/', views.DownloadFiles, name='DownloadFiles'),
-    #path('test/',views.test, name='test'),
-    # path('',views.indexView,name="home"),
-    # # path('dashboard/',views.dashboardView,name="dashboard"),
-    # path('login/',LoginView.as_view(),name="login_url"),
-    # path('register/',views.registerView,name="register_url"),
-    # path('logout/',LogoutView.as_view(next_page='dashboard'),name="logout"),
 ]

@@ -9,7 +9,3 @@ def test_register_valid_data():
         "invite_code":"1234",
     })
     assert(form.is_valid())
-
-    # self.assertEqual(comment.email, "leela@example.com")
-    # self.assertEqual(comment.body, "Hi there")
-    # self.assertEqual(comment.entry, self.entry)
