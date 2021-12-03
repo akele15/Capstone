@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=agent
+Exec=agent
+Icon=agent
+Type=Application
+Categories=Utility;

